@@ -449,7 +449,7 @@ export class ViewersGrid {
     private _structure(index: number): Structure {
         if (this._resolvedStructures[index] === undefined) {
             const s = this.loadStructure(index, this._structures[index]);
-            const check = checkStructure(s as unknown as JsObject);
+            const check = checkStructure((s as unknown) as JsObject);
             if (check !== '') {
                 throw Error(
                     `got invalid object as structure: ${check}
