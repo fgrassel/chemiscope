@@ -436,14 +436,14 @@ export class PropertiesMap {
                 if (!was3D) {
                     this._switch3D();
                 }
+                
+                const values = this._coordinates(this._options.z);
+                this._restyle({ z: values } as Data, [0, 1]);
+                this._relayout({
+                    'scene.zaxis.title': this._title(this._options.z.property.value),
+                    'scene.zaxis.autorange': true,
+                } as unknown as Layout);
             }
-
-            const values = this._coordinates(this._options.z);
-            this._restyle({ z: values } as Data, [0, 1]);
-            this._relayout({
-                'scene.zaxis.title': this._title(this._options.z.property.value),
-                'scene.zaxis.autorange': true,
-            } as unknown as Layout);
         };
 
         this._options.z.scale.onchange = () => {
