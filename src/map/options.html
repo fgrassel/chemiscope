@@ -178,23 +178,25 @@
                         </div>
 
                         <button class="btn btn-sm btn-light" type="button" id="chsp-color-reset">reset</button>
-                        
-                        <div class="chsp-map-options" style="grid-column: 1/ span 3">
-                        <div class="input-group input-group-sm" >
-                            <div class="input-group-prepend">
-                                <label class="input-group-text" for="chsp-palette">palette:</label>
+
+                        <div class="chsp-map-options" style="grid-column: 1 / span 3">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="chsp-palette">palette:</label>
+                                </div>
+                                <select id="chsp-palette" class="custom-select"></select>
                             </div>
-                            <select id="chsp-palette" class="custom-select"></select>                                                                                            
-                        </div>                        
-                        <div> </div>                                                            
+                            <div></div>
                         </div>
                     </div>
-                  
+
                     <div class="input-group input-group-sm">
                         <div class="input-group-prepend">
                             <label class="input-group-text" for="chsp-size">size:</label>
                         </div>
-                        <select id="chsp-size" class="custom-select"><option value="">fixed</option></select>                        
+                        <select id="chsp-size" class="custom-select">
+                            <option value="">fixed</option>
+                        </select>
                     </div>
 
                     <button
@@ -212,13 +214,13 @@
                             <div class="input-group-prepend">
                                 <label class="input-group-text" for="chsp-size-mode">size scale:</label>
                             </div>
-                            <select id="chsp-size-mode" class="custom-select" disabled>                                
+                            <select id="chsp-size-mode" class="custom-select" disabled>
                                 <option value="linear">linear</option>
                                 <option value="log">log</option>
                                 <option value="sqrt">sqrt</option>
                                 <option value="inverse">inverse</option>
                             </select>
-                        </div>                        
+                        </div>
                         <div class="custom-switch">
                             <input class="custom-control-input" id="chsp-size-reverse" type="checkbox" disabled />
                             <label class="custom-control-label" for="chsp-size-reverse" title="reverse sizes">reverse sizes</label>

@@ -81,7 +81,7 @@ export function optionValidator(valid: string[], name = ''): (value: string) => 
             return;
         }
         throw Error(
-            `invalid property '${value}' for ${name}, are you sure the settings correspond to the current dataset? ${valid}`
+            `invalid property '${value}' for ${name}, are you sure the settings correspond to the current dataset?`
         );
     };
 }
@@ -309,7 +309,6 @@ export abstract class OptionsGroup {
     public applySettings(settings: SavedSettings): void {
         // make a copy of the settings since we will be changing it below
         const copy = JSON.parse(JSON.stringify(settings)) as SavedSettings;
-
         this.foreachOption((keys, option) => {
             /* eslint-disable */
             assert(keys.length >= 1);

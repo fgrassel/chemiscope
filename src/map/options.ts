@@ -102,15 +102,15 @@ export class MapOptions extends OptionsGroup {
         this.y = new AxisOptions(propertiesName);
         // For z and color '' is a valid value
         this.z = new AxisOptions(propertiesName.concat(['']));
-        this.color = new AxisOptions(propertiesName.concat(['']));        
+        this.color = new AxisOptions(propertiesName.concat(['']));
 
         this.symbol = new HTMLOption('string', '');
         const validSymbols = [''];
-        for (const key in properties) {            
+        for (const key in properties) {
             if (properties[key].string !== undefined) {
                 validSymbols.push(key);
             }
-        }        
+        }
         this.symbol.validate = optionValidator(validSymbols, 'symbol');
 
         this.palette = new HTMLOption('string', 'inferno');
@@ -122,17 +122,14 @@ export class MapOptions extends OptionsGroup {
             property: new HTMLOption('string', ''),
             reverse: new HTMLOption('boolean', false),
         };
-        
+
         this.size.property.validate = optionValidator(propertiesName.concat(['']), 'size');
         this.size.factor.validate = (value) => {
             if (value < 1 || value > 100) {
                 throw Error(`size factor must be between 0 and 100, got ${value}`);
             }
         };
-        this.size.mode.validate = optionValidator(
-            ['linear', 'log', 'sqrt', 'inverse'],
-            'mode'
-        );
+        this.size.mode.validate = optionValidator(['linear', 'log', 'sqrt', 'inverse'], 'mode');
 
         this.x.property.value = propertiesName[0];
         this.y.property.value = propertiesName[1];
@@ -154,6 +151,7 @@ export class MapOptions extends OptionsGroup {
 
         this._bind(properties);
         this.applySettings(settings);
+        this.size.property.onchange(this.size.property.value, 'JS');
     }
 
     /**
@@ -162,8 +160,8 @@ export class MapOptions extends OptionsGroup {
      * @param settings settings for all panels
      */
     public applySettings(settings: SavedSettings): void {
-        // deal with backward compatibility: size.property === '' used to mean
-        // "use a constant scaling"
+        // deal with backward compatibility: size.property === '' was indicated
+        // by setting "size.mode = constant"
         if ('size' in settings) {
             const size = settings.size as SavedSettings;
             if ('mode' in size && size.mode === 'constant') {
@@ -234,7 +232,7 @@ export class MapOptions extends OptionsGroup {
         const values = rawSizes.map((v: number) => {
             // normalize between 0 and 1, then scale by the user provided value
             let scaled = 0.55; // default
-            if (max - min == 0) {
+            if (max - min === 0) {
                 scaleMode = 'fixed';
             } else {
                 scaled = (v + bottomLimit - min) / (max - min);

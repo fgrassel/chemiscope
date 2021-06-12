@@ -207,6 +207,10 @@ export class PropertiesMap {
         };
 
         this._createPlot();
+
+        // Trigger a few updates that are needed to ensure a consistent state
+        this._options.size.property.onchange(this._options.size.property.value, 'JS');
+        this._options.z.property.onchange(this._options.z.property.value, 'JS');
     }
 
     /**
@@ -436,7 +440,8 @@ export class PropertiesMap {
                 if (!was3D) {
                     this._switch3D();
                 }
-                
+                this._options.z.enable();
+
                 const values = this._coordinates(this._options.z);
                 this._restyle({ z: values } as Data, [0, 1]);
                 this._relayout({
@@ -568,8 +573,7 @@ export class PropertiesMap {
 
         // ======= markers size
         this._options.size.property.onchange = () => {
-            console.log("size changed ", this._options.size.property.value);
-            if (this._options.size.property.value !== 'fixed') {
+            if (this._options.size.property.value !== '') {
                 this._options.size.mode.enable();
                 this._options.size.reverse.enable();
             } else {
@@ -839,10 +843,12 @@ export class PropertiesMap {
      */
     private _sizes(trace?: number): Array<number | number[]> {
         let sizes;
-        if (this._options.size.property.value != '') {
+        if (this._options.size.property.value !== '') {
             sizes = this._property(this._options.size.property.value).values;
         } else {
-            sizes = new Array(this._property(this._options.x.property.value).values.length).fill(1.0);
+            sizes = new Array(this._property(this._options.x.property.value).values.length).fill(
+                1.0
+            );
         }
         const values = this._options.calculateSizes(sizes);
         const selected = [];
