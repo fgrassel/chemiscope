@@ -81,7 +81,7 @@ export function optionValidator(valid: string[], name = ''): (value: string) => 
             return;
         }
         throw Error(
-            `invalid property '${value}' for ${name}, are you sure the settings correspond to the current dataset?`
+            `invalid property '${value}' for ${name}, are you sure the settings correspond to the current dataset? ${valid}`
         );
     };
 }

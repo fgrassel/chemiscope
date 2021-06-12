@@ -567,12 +567,13 @@ export class PropertiesMap {
         };
 
         // ======= markers size
-        this._options.size.mode.onchange = () => {
-            if (this._options.size.mode.value !== 'constant') {
-                this._options.size.property.enable();
+        this._options.size.property.onchange = () => {
+            console.log("size changed ", this._options.size.property.value);
+            if (this._options.size.property.value !== 'fixed') {
+                this._options.size.mode.enable();
                 this._options.size.reverse.enable();
             } else {
-                this._options.size.property.disable();
+                this._options.size.mode.disable();
                 this._options.size.reverse.disable();
             }
             this._restyle({ 'marker.size': this._sizes(0) } as Data, 0);
@@ -582,7 +583,7 @@ export class PropertiesMap {
             this._restyle({ 'marker.size': this._sizes(0) } as Data, 0);
         };
 
-        this._options.size.property.onchange = () => {
+        this._options.size.mode.onchange = () => {
             this._restyle({ 'marker.size': this._sizes(0) } as Data, 0);
         };
 
@@ -837,7 +838,12 @@ export class PropertiesMap {
      * all of them if `trace === undefined`.
      */
     private _sizes(trace?: number): Array<number | number[]> {
-        const sizes = this._property(this._options.size.property.value).values;
+        let sizes;
+        if (this._options.size.property.value != '') {
+            sizes = this._property(this._options.size.property.value).values;
+        } else {
+            sizes = new Array(this._property(this._options.x.property.value).values.length).fill(1.0);
+        }
         const values = this._options.calculateSizes(sizes);
         const selected = [];
         if (this._is3D()) {

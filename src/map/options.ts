@@ -100,17 +100,17 @@ export class MapOptions extends OptionsGroup {
 
         this.x = new AxisOptions(propertiesName);
         this.y = new AxisOptions(propertiesName);
-        // For z and color, '' is a valid value
+        // For z and color '' is a valid value
         this.z = new AxisOptions(propertiesName.concat(['']));
-        this.color = new AxisOptions(propertiesName.concat(['']));
+        this.color = new AxisOptions(propertiesName.concat(['']));        
 
         this.symbol = new HTMLOption('string', '');
         const validSymbols = [''];
-        for (const key in properties) {
+        for (const key in properties) {            
             if (properties[key].string !== undefined) {
                 validSymbols.push(key);
             }
-        }
+        }        
         this.symbol.validate = optionValidator(validSymbols, 'symbol');
 
         this.palette = new HTMLOption('string', 'inferno');
@@ -118,19 +118,20 @@ export class MapOptions extends OptionsGroup {
 
         this.size = {
             factor: new HTMLOption('number', 50),
-            mode: new HTMLOption('string', 'constant'),
-            property: new HTMLOption('string', propertiesName[0]),
+            mode: new HTMLOption('string', 'linear'),
+            property: new HTMLOption('string', ''),
             reverse: new HTMLOption('boolean', false),
         };
-        this.size.property.validate = optionValidator(propertiesName, 'size');
+        
+        this.size.property.validate = optionValidator(propertiesName.concat(['']), 'size');
         this.size.factor.validate = (value) => {
             if (value < 1 || value > 100) {
                 throw Error(`size factor must be between 0 and 100, got ${value}`);
             }
         };
         this.size.mode.validate = optionValidator(
-            ['constant', 'linear', 'log', 'sqrt', 'inverse'],
-            'size'
+            ['linear', 'log', 'sqrt', 'inverse'],
+            'mode'
         );
 
         this.x.property.value = propertiesName[0];
@@ -165,9 +166,9 @@ export class MapOptions extends OptionsGroup {
         // "use a constant scaling"
         if ('size' in settings) {
             const size = settings.size as SavedSettings;
-            if ('property' in size && size.property === '') {
-                delete size.property;
-                size.mode = 'constant';
+            if ('mode' in size && size.mode === 'constant') {
+                delete size.mode;
+                size.property = '';
             }
         }
         super.applySettings(settings);
@@ -224,7 +225,7 @@ export class MapOptions extends OptionsGroup {
 
         const userFactor = logSlider(this.size.factor.value);
 
-        const scaleMode = this.size.mode.value;
+        let scaleMode = this.size.mode.value;
         const reversed = this.size.reverse.value;
         const { min, max } = arrayMaxMin(rawSizes);
         const defaultSize = this.is3D() ? 800 : 150;
@@ -232,9 +233,14 @@ export class MapOptions extends OptionsGroup {
 
         const values = rawSizes.map((v: number) => {
             // normalize between 0 and 1, then scale by the user provided value
-            let scaled = (v + bottomLimit - min) / (max - min);
-            if (reversed) {
-                scaled = 1.0 + bottomLimit - scaled;
+            let scaled = 0.55; // default
+            if (max - min == 0) {
+                scaleMode = 'fixed';
+            } else {
+                scaled = (v + bottomLimit - min) / (max - min);
+                if (reversed) {
+                    scaled = 1.0 + bottomLimit - scaled;
+                }
             }
             switch (scaleMode) {
                 case 'inverse':
@@ -406,7 +412,9 @@ export class MapOptions extends OptionsGroup {
 
         // ======= marker size
         const selectSizeProperty = getByID<HTMLSelectElement>('chsp-size');
+        // first option is 'none'
         selectSizeProperty.options.length = 0;
+        selectSizeProperty.options.add(new Option('fixed', ''));
         for (const key in properties) {
             selectSizeProperty.options.add(new Option(key, key));
         }
