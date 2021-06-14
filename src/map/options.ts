@@ -232,7 +232,7 @@ export class MapOptions extends OptionsGroup {
         const values = rawSizes.map((v: number) => {
             // normalize between 0 and 1, then scale by the user provided value
             let scaled = 0.55; // default
-            if (max - min === 0) {
+            if (max === min) {
                 scaleMode = 'fixed';
             } else {
                 scaled = (v + bottomLimit - min) / (max - min);
