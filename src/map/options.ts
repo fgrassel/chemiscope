@@ -410,7 +410,7 @@ export class MapOptions extends OptionsGroup {
 
         // ======= marker size
         const selectSizeProperty = getByID<HTMLSelectElement>('chsp-size');
-        // first option is 'none'
+        // first option is 'fixed'
         selectSizeProperty.options.length = 0;
         selectSizeProperty.options.add(new Option('fixed', ''));
         for (const key in properties) {
