@@ -12,7 +12,7 @@ import numpy as np
 from .adapters import frames_to_json, atom_properties, structure_properties
 
 
-def create_input(frames, meta=None, properties=None, cutoff=None):
+def create_input(frames, meta=None, properties=None, centers=None):
     """
     Create a dictionary that can be saved to JSON using the format used by
     the default chemiscope visualizer.
@@ -21,8 +21,9 @@ def create_input(frames, meta=None, properties=None, cutoff=None):
                         objects are supported
     :param dict meta: optional metadata of the dataset, see below
     :param dict properties: optional dictionary of additional properties, see below
-    :param float cutoff: optional. If present, will be used to generate
-                         atom-centered environments
+    :param list centers: optional list of (structure, center, cutoff) tuples/arrays
+                        specifying which centers have properties attached and how
+                        far out environments should be drawn by default
 
     The dataset metadata should be given in the ``meta`` dictionary, the
     possible keys are:
@@ -116,8 +117,8 @@ def create_input(frames, meta=None, properties=None, cutoff=None):
         _validate_property(name, value)
         data["properties"].update(_linearize(name, value, n_structures, n_atoms))
 
-    if cutoff is not None:
-        data["environments"] = _generate_environments(frames, cutoff)
+    if centers is not None:
+        data["environments"] = _generate_environments(centers)
 
     return data
 
@@ -296,18 +297,17 @@ def _linearize(name, property, n_structures, n_atoms):
     return data
 
 
-def _generate_environments(frames, cutoff):
-    if not isinstance(cutoff, float):
-        raise Exception(
-            f"cutoff must be a float, got '{cutoff}' of type {type(cutoff)}"
-        )
-
+def _generate_environments(centers, fixed_cutoff=3.5):
     environments = []
-    for frame_id, frame in enumerate(frames):
-        for center in range(len(frame)):
-            environments.append(
-                {"structure": frame_id, "center": center, "cutoff": cutoff}
-            )
+    for center in centers:
+        if len(center) == 3:
+            frame, atom, cutoff = center
+        else:
+            frame, atom = center
+            cutoff = fixed_cutoff
+        environments.append(
+                {"structure": frame, "center": atom, "cutoff": cutoff}
+        )
     return environments
 
 

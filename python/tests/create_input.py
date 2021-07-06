@@ -256,29 +256,17 @@ class TestCreateInputProperties(unittest.TestCase):
 
 class TestCreateInputEnvironments(unittest.TestCase):
     def test_environment(self):
-        data = create_input(frames=TEST_FRAMES + TEST_FRAMES, cutoff=3.5)
+        centers_list = [(0,0,3.5), (1,1,2.5), (1,3,3),
+                        (3,2,4.0), (4,2,5), (4,4,5)]
+        data = create_input(frames=TEST_FRAMES + TEST_FRAMES, 
+                centers = centers_list)
         self.assertEqual(len(data["environments"]), 6)
 
         for i, env in enumerate(data["environments"]):
-            self.assertEqual(env["structure"], i // 3)
-            self.assertEqual(env["center"], i % 3)
-            self.assertEqual(env["cutoff"], 3.5)
+            self.assertEqual(env["structure"], centers_list[i][0])
+            self.assertEqual(env["center"], centers_list[i][1])
+            self.assertEqual(env["cutoff"], centers_list[i][2])
 
-    def test_environment_wrong_type(self):
-        with self.assertRaises(Exception) as cm:
-            create_input(frames=TEST_FRAMES, cutoff="3.5")
-
-        self.assertEqual(
-            str(cm.exception), "cutoff must be a float, got '3.5' of type <class 'str'>"
-        )
-
-        with self.assertRaises(Exception) as cm:
-            create_input(frames=TEST_FRAMES, cutoff=False)
-
-        self.assertEqual(
-            str(cm.exception),
-            "cutoff must be a float, got 'False' of type <class 'bool'>",
-        )
 
 
 if __name__ == "__main__":
